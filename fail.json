@@ -1,40 +1,19 @@
 {
-  "2345-com": [
-    "http://m.daikuan.2345.com/register?channel=hj-2345yddh_fr_wxy",
-    "http://m.2345.com/neiye/site_news.htm",
-    "http://m.2345.com/neiye/site_novel.htm",
-    "http://m.2345.com/neiye/site_military.htm",
-    "http://m.2345.com/neiye/site_cars.htm",
-    "http://m.2345.com/neiye/site_economy.htm",
-    "http://m.2345.com/neiye/site_trip.htm",
-    "http://wapzhushou.2345.com/gamerec.html?q=dh_app",
-    "http://zhushou.2345.com/m/?q=m_daohangmingzhan",
-    "http://m.2345.com/neiye/site_friends.htm",
-    "http://m.2345.com/neiye/site_pictures.htm",
-    "http://tools.2345.com/m/suanming.htm",
-    "http://tools.2345.com/m/zhgjm.htm?m"
+  "dwz-cn": [
+    "http://dwz.cn/2ypXkq"
   ],
-  "haiwainet-cn": [
-    "http://m.haiwainet.cn/?kj=hww"
+  "autohome-com-cn": [
+    "http://car.m.autohome.com.cn/pic/view.html?pvareaid=100269#!/spec/27765/i3596527",
+    "http://car.m.autohome.com.cn/pic/view.html?pvareaid=100270#!/spec/27670/i3596268",
+    "http://car.m.autohome.com.cn/pic/view.html?pvareaid=100271#!/spec/27308/i3596628",
+    "http://car.m.autohome.com.cn/pic/view.html?pvareaid=100272#!/spec/26114/i3554064",
+    "http://car.m.autohome.com.cn/pic/view.html?pvareaid=100273#!/spec/26181/i3562642",
+    "http://car.m.autohome.com.cn/pic/view.html?pvareaid=100274#!/spec/26138/i3430011"
   ],
-  "lvmama-com": [
-    "http://m.lvmama.com/?losc=071650&cm_mmc=2345-_-cpt-_-app-_-minzhan&utm_source=2345&utm_medium=app&utm_campaign=cpt"
+  "diff": [
+    "http://www.autohome.com.cn/"
   ],
-  "qunar-com": [
-    "http://touch.qunar.com/?bd_source=2345mingzhan"
-  ],
-  "iqiyi-com": [
-    "http://m.iqiyi.com/"
-  ],
-  "qq-com": [
-    "http://m.y.qq.com/",
-    "http://qzone.qq.com/"
-  ],
-  "baidu-com": [
-    "http://music.baidu.com/"
-  ],
-  "tuniu-com": [
-    "http://m.tuniu.com/train#p=25144",
-    "http://dynamic.m.tuniu.com/flight#p=25143"
+  "athm-cn": [
+    "http://athm.cn/A3gJA"
   ]
 }

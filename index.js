@@ -8,6 +8,7 @@
  * 2. 失败report，统计（不展示的原因）
  */
 var child_process = require('child_process');
+var fs = require('fs');
 var spawn = child_process.spawn;
 var colors = require('colors');
 var events = require('events');
@@ -16,22 +17,12 @@ var Link = require('./lib/links');
 var spider = require('./lib/spider');
 var low = require('lowdb');
 var db = low('fail.json');
+var sizeOf = require('image-size');
+var func = require('./lib/func');
 // 最多开10个子进程
 var MAX_PROCESS = 5;
 // 当前子进程个数
 var count = 0;
-
-
-function extractHost(url) {
-	var reg = /^https?:\/\/([^\/]*)/;
-	var matches = url.match(reg);
-	if (matches) {
-		var hostReg = /([^\.]*)\.(com|cn|net|org|cc)(\.cn)?$/;
-		var mat = matches[1].match(hostReg);
-		return mat ? mat[0] : matches[1];
-	}
-	return '';
-}
 
 // 控制线程池
 function createSnapProcess(url) {
@@ -40,7 +31,7 @@ function createSnapProcess(url) {
 	snapshot.stdout.on('data', function(data) {
 		console.log(colors.green(data));
 		if (/Error/.test(data)) {
-			// recordFail(url);
+			recordFail(url);
 			eventEmitter.emit('process:end');
 			count--;
 		}
@@ -50,8 +41,21 @@ function createSnapProcess(url) {
 		console.log(colors.red.underline('stderr:' + data));
 	});
 	snapshot.on('exit', function(state) {
-		if (state !== 0) {
+		// resemble timeout
+		// insert fail
+		if (state === 3 || state === 1) {
 			recordFail(url);
+		} else if (state === 2) {
+			// insert success, shown uncorrectly.
+			recordDiff(url);
+		}
+		// process image file, image size
+		var path = func.getPath(url);
+		if (fs.existsSync(path)) {
+			var imgInfo = sizeOf(path);
+			if (imgInfo.width === 375 && imgInfo.height === 220) {
+				// 正确的图片
+			}
 		}
 		eventEmitter.emit('process:end');
 		count--;
@@ -59,9 +63,14 @@ function createSnapProcess(url) {
 	});
 }
 
-// @TODO：重复插入
-function recordFail(url) {
-	var host = extractHost(url).replace(/\./g, '-');
+// 插入成功，显示异常
+function recordDiff(url) {
+	recordFail(url, 'diff');
+}
+
+// 插入失败
+function recordFail(url, name) {
+	var host = name || func.extractHost(url).replace(/\./g, '-');
 	if (!db.has(host).value()) {
 		db.set(host, []).value();
 	}
@@ -70,7 +79,6 @@ function recordFail(url) {
 	if (-1 === set.indexOf(url)) {
 		db.get(host).push(url).value();
 	}
-
 }
 
 
@@ -91,7 +99,7 @@ eventEmitter.on('process:end', function() {
 	}
 });
 
-Link.addLink('http://m.2345.com/websitesNavigation.htm');
-// Link.addLink('http://m.autohome.com.cn');
+// Link.addLink('http://k.m.autohome.com.cn/#pvareaid=100237');
+Link.addLink('http://m.autohome.com.cn');
 var url = Link.getLink(MAX_PROCESS);
 snapUrls(url);

@@ -48,5 +48,7 @@ Temporary Items
 
 node_modules
 snapshot
-injectJs
 npm-debug.log
+index.test.js
+lib/snapshot.test.js
+resemblejscontainer.html
