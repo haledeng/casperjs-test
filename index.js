@@ -99,7 +99,7 @@ eventEmitter.on('process:end', function() {
 	}
 });
 
-// Link.addLink('http://k.m.autohome.com.cn/#pvareaid=100237');
-Link.addLink('http://m.autohome.com.cn');
+// Link.addLink('http://m.autohome.com.cn');
+Link.addLink('http://m.2345.com/websitesNavigation.htm');
 var url = Link.getLink(MAX_PROCESS);
 snapUrls(url);
