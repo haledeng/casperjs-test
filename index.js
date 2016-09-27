@@ -50,12 +50,11 @@ function createSnapProcess(url) {
 			recordDiff(url);
 		}
 		// process image file, image size
-		var path = func.getPath(url);
+		var path = func.getPath(url).success;
 		if (fs.existsSync(path)) {
 			var imgInfo = sizeOf(path);
-			if (imgInfo.width === 375 && imgInfo.height === 220) {
-				// 正确的图片
-			}
+			// 广告平铺展示
+			if (imgInfo.width === 375 && imgInfo.height === 220) {}
 		}
 		eventEmitter.emit('process:end');
 		count--;
