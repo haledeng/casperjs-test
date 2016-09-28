@@ -1,11 +1,5 @@
 /**
- * 1. 无线网络掉线
- * 2. https://github.com/sheebz/phantom-proxy
- * 3. eventEmmiter
- *
- * @todo :
- * 1. 信息流插入成功report
- * 2. 失败report，统计（不展示的原因）
+ * 1. https: //github.com/sheebz/phantom-proxy
  */
 var child_process = require('child_process');
 var fs = require('fs');
