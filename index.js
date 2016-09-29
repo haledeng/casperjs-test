@@ -11,7 +11,6 @@ var Link = require('./lib/links');
 var spider = require('./lib/spider');
 var low = require('lowdb');
 var db = low('fail.json');
-var sizeOf = require('image-size');
 var func = require('./lib/func');
 // 最多开10个子进程
 var MAX_PROCESS = 5;
@@ -35,20 +34,12 @@ function createSnapProcess(url) {
 		console.log(colors.red.underline('stderr:' + data));
 	});
 	snapshot.on('exit', function(state) {
-		// resemble timeout
-		// insert fail
+		// resemble timeout, insert fail
 		if (state === 3 || state === 1) {
 			recordFail(url);
 		} else if (state === 2) {
 			// insert success, shown uncorrectly.
 			recordDiff(url);
-		}
-		// process image file, image size
-		var path = func.getPath(url).success;
-		if (fs.existsSync(path)) {
-			var imgInfo = sizeOf(path);
-			// 广告平铺展示
-			if (imgInfo.width === 375 && imgInfo.height === 220) {}
 		}
 		eventEmitter.emit('process:end');
 		count--;
@@ -83,16 +74,28 @@ function snapUrls(urls, isSpider) {
 	});
 }
 
-// 子进程处理完毕后，新开子进程
-eventEmitter.on('process:end', function() {
-	// create new process
-	var urls = Link.getLink(MAX_PROCESS - count);
-	if (urls.length) {
-		snapUrls(urls, true);
-	}
-});
+// 本地静态服务器
+function runResourceServer() {
+	var svr = spawn('node', ['lib/http.js']);
+}
 
-// Link.addLink('http://m.autohome.com.cn');
-Link.addLink('http://m.2345.com/websitesNavigation.htm');
-var url = Link.getLink(MAX_PROCESS);
-snapUrls(url);
+
+function startNewChildProcess() {
+	// 子进程处理完毕后，新开子进程
+	eventEmitter.on('process:end', function() {
+		var urls = Link.getLink(MAX_PROCESS - count);
+		if (urls.length) {
+			snapUrls(urls, true);
+		}
+	});
+}
+
+function init() {
+	runResourceServer();
+	startNewChildProcess();
+	Link.addLink('http://m.2345.com/websitesNavigation.htm');
+	var url = Link.getLink(MAX_PROCESS);
+	snapUrls(url);
+}
+
+init();
