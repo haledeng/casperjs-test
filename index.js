@@ -86,6 +86,8 @@ function startNewChildProcess() {
 		var urls = Link.getLink(MAX_PROCESS - count);
 		if (urls.length) {
 			snapUrls(urls, true);
+		} else {
+			process.exit();
 		}
 	});
 }
