@@ -34,7 +34,7 @@ function comparePic() {
 	// canvas.toDataURL跨域问题
 	// Access-Control-Allow-Origin: '*'
 	// content-security-policy
-	resemble(picHost + '/injectJs/base.png')
+	resemble(picHost + '/resource/base.png')
 		.compareTo(_filePath)
 		.ignoreColors()
 		.onComplete(function(data) {
@@ -92,6 +92,7 @@ function addInsertListener() {
 	});
 }
 
+// 加载测试脚本，执行case
 function executeTest(url) {
 	casper.start(url);
 	// exit state

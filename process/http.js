@@ -2,7 +2,7 @@
 var http = require('http');
 var fs = require('fs');
 var path = require('path');
-var types = require('./minitype').types;
+var types = require('../lib/minitype').types;
 
 var server = http.createServer(function(req, res) {
 	var headers = req.headers;

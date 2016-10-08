@@ -7,7 +7,7 @@ A automatic test for DOM inserting.
 + [python](https://www.python.org/)
 + [casperjs](http://docs.casperjs.org/en/latest/index.html)
 
-**On window platform, the install path should be added into global environment path.**
+**On win32 platform, the install path should be added into global environment path.**
 
 ### Install
 Execute the following order in command line.
