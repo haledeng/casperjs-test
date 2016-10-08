@@ -2,8 +2,8 @@
  * 1. https: //github.com/sheebz/phantom-proxy
  */
 var child_process = require('child_process');
-var fs = require('fs');
 var spawn = child_process.spawn;
+var fs = require('fs');
 var colors = require('colors');
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
@@ -74,7 +74,7 @@ function snapUrls(urls, isSpider) {
 	});
 }
 
-// 本地静态服务器
+// 本地静态资源服务器
 function runResourceServer() {
 	var svr = spawn('node', ['lib/http.js']);
 }
@@ -92,12 +92,12 @@ function startNewChildProcess() {
 	});
 }
 
-function init() {
+function init(url) {
 	runResourceServer();
 	startNewChildProcess();
-	Link.addLink('http://m.2345.com/websitesNavigation.htm');
+	Link.addLink(url);
 	var url = Link.getLink(MAX_PROCESS);
 	snapUrls(url);
 }
 
-init();
+init('http://m.2345.com/websitesNavigation.htm');
