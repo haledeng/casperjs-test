@@ -56,6 +56,33 @@ function comparePic() {
 }
 
 
+
+function sendCompareResult() {
+	casper.evaluate(function() {
+		var diff = window._diffData_;
+
+		function sendRequest(param) {
+			var url = 'http://www.test.com';
+			var arr = [];
+			Object.keys(param).forEach(function(key) {
+				arr.push(key + '=' + encodeURIComponent(param[key]));
+			});
+			url = url + '?' + arr.join('&');
+			new Image().src = url;
+		}
+
+		var param = {
+			percentage: diff.misMatchPercentage,
+			info: 'same picture',
+			url: location.href,
+			state: 1
+		};
+
+		sendRequest(param);
+	});
+}
+
+
 // 插入成功回调
 function addInsertListener() {
 	casper.on('insert:success', function(filePath, realUrl) {
@@ -67,6 +94,9 @@ function addInsertListener() {
 				return window._hasImage_;
 			});
 		}, function() {
+
+			// sendCompareResult();
+
 			var diff = casper.evaluate(function() {
 				return window._diffData_;
 			});
@@ -112,7 +142,7 @@ function executeTest(url) {
 			this.capture('.' + filePath.fail);
 			this.die("Timeout reached. Or xinxiliu insert fail");
 			this.exit(1);
-		}), 15e3);
+		}), 20e3);
 	});
 	casper.run();
 }

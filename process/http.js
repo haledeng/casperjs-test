@@ -4,9 +4,8 @@ var fs = require('fs');
 var path = require('path');
 var types = require('../lib/minitype').types;
 
-var server = http.createServer(function(req, res) {
-	var headers = req.headers;
-	var host = headers.host;
+
+var resourceServer = function(req, res) {
 	var url = req.url;
 	var filePath = path.join('./', url);
 	var ext = path.extname(url);
@@ -33,6 +32,29 @@ var server = http.createServer(function(req, res) {
 				res.end();
 			}
 		});
+	}
+};
+
+// 回写图片对比的结果
+function writeResult(req, res) {
+	var url = req.url
+	var params = require('url').parse(url, true).query || {};
+	fs.writeFileSync('result.txt', JSON.stringify(params), 'utf-8');
+	res.writeHeader(200);
+	res.end();
+}
+
+
+var server = http.createServer(function(req, res) {
+	var url = req.url;
+	var ext = path.extname(url);
+	ext = ext.replace('.', '');
+
+	if (~['js', 'png', 'jpeg', 'jpg', 'css', 'svg'].indexOf(ext)) {
+		resourceServer(req, res);
+	} else {
+		writeResult(req, res);
+
 	}
 });
 server.listen(80);
