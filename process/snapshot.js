@@ -1,7 +1,7 @@
 // require local module
 var require = patchRequire(require);
 var fs = require('fs');
-// 复用func.js 必须引用绝对路径
+// absolute path
 var path = fs.absolute(fs.workingDirectory + '/lib/func.js');
 var func = require(path);
 var casper = require('casper').create({
@@ -9,7 +9,8 @@ var casper = require('casper').create({
 	clientScripts: [
 		'./injectJs/zhaopin.test.min.js',
 		'./injectJs/resemble.js',
-		'./lib/func.js'
+		'./lib/func.js',
+		'./injectJs/tools.js'
 	],
 	pageSettings: {
 		userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1',
@@ -21,8 +22,7 @@ var casper = require('casper').create({
 		height: 667
 	}
 });
-var args = casper.cli.args;
-var url = args[0];
+
 
 // 浏览器执行
 function comparePic() {
@@ -39,48 +39,19 @@ function comparePic() {
 		.ignoreColors()
 		.onComplete(function(data) {
 			if (Number(data.misMatchPercentage) > 50) {
-				render(data);
+				window._tool_.render(data.getImageDataUrl());
 			}
 			window._hasImage_ = true;
 			window._diffData_ = data;
-
-			function render(data) {
-				var div = document.createElement('div');
-				div.id = 'image-diff';
-				var img = new Image();
-				img.src = data.getImageDataUrl();
-				div.appendChild(img);
-				document.body.appendChild(div);
-			}
 		});
 }
 
-
-
-function sendCompareResult() {
-	casper.evaluate(function() {
-		var diff = window._diffData_;
-
-		function sendRequest(param) {
-			var url = 'http://www.test.com';
-			var arr = [];
-			Object.keys(param).forEach(function(key) {
-				arr.push(key + '=' + encodeURIComponent(param[key]));
-			});
-			url = url + '?' + arr.join('&');
-			new Image().src = url;
-		}
-
-		var param = {
-			percentage: diff.misMatchPercentage,
-			info: 'same picture',
-			url: location.href,
-			state: 1
-		};
-
-		sendRequest(param);
-	});
-}
+// 发送结果到本地server，写记录
+var sendResult = function(state) {
+	casper.evaluate(function(t) {
+		window._tool_.sendResult(t);
+	}, state);
+};
 
 
 // 插入成功回调
@@ -94,31 +65,31 @@ function addInsertListener() {
 				return window._hasImage_;
 			});
 		}, function() {
-
-			// sendCompareResult();
-
 			var diff = casper.evaluate(function() {
 				return window._diffData_;
 			});
 			if (!diff || 'undefined' === typeof diff.misMatchPercentage) {
-				// csp
+				sendResult(1);
 				casper.echo('request image fail.');
 				casper.exit(4);
 			} else {
 				casper.echo(diff.misMatchPercentage);
 				if (Number(diff.misMatchPercentage) > 50) {
 					casper.echo('different picture');
+					sendResult(2);
 					casper.captureSelector('./snapshot/diff/' + (host ? host + '/' : '') + func.url2name(url) + '.png', '#image-diff');
 					casper.exit(2);
 				} else {
+					sendResult(0);
 					casper.echo('same picture');
 					casper.exit(0);
 				}
 			}
 		}, function() {
+			send.fail();
 			casper.echo('Timeout....');
 			casper.exit(3);
-		}, 60000);
+		}, 6e4);
 	});
 }
 
@@ -139,15 +110,22 @@ function executeTest(url) {
 			this.captureSelector('.' + filePath.success, '#z_p');
 			this.emit('insert:success', filePath, realUrl);
 		}), (function() {
+			send.fail();
 			this.capture('.' + filePath.fail);
 			this.die("Timeout reached. Or xinxiliu insert fail");
 			this.exit(1);
-		}), 20e3);
+		}), 2e4);
 	});
 	casper.run();
 }
 
-if (url && /^http:\/\//.test(url)) {
-	addInsertListener();
-	executeTest(url);
+function init() {
+	var args = casper.cli.args;
+	var url = args[0];
+	if (url && /^http:\/\//.test(url)) {
+		addInsertListener();
+		executeTest(url);
+	}
 }
+
+init();

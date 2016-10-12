@@ -3,6 +3,7 @@ var http = require('http');
 var fs = require('fs');
 var path = require('path');
 var types = require('../lib/minitype').types;
+var db = require('../lib/db');
 
 
 var resourceServer = function(req, res) {
@@ -37,24 +38,21 @@ var resourceServer = function(req, res) {
 
 // 回写图片对比的结果
 function writeResult(req, res) {
-	var url = req.url
-	var params = require('url').parse(url, true).query || {};
-	fs.writeFileSync('result.txt', JSON.stringify(params), 'utf-8');
+	var params = require('url').parse(req.url, true).query || {};
+	db.write(params);
 	res.writeHeader(200);
 	res.end();
 }
 
 
 var server = http.createServer(function(req, res) {
-	var url = req.url;
-	var ext = path.extname(url);
+	var ext = path.extname(req.url);
 	ext = ext.replace('.', '');
 
 	if (~['js', 'png', 'jpeg', 'jpg', 'css', 'svg'].indexOf(ext)) {
 		resourceServer(req, res);
 	} else {
 		writeResult(req, res);
-
 	}
 });
 server.listen(80);
