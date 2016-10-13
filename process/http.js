@@ -3,7 +3,7 @@ var http = require('http');
 var fs = require('fs');
 var path = require('path');
 var types = require('../lib/minitype').types;
-var db = require('../lib/db');
+var log = require('../lib/log');
 
 
 var resourceServer = function(req, res) {
@@ -39,7 +39,7 @@ var resourceServer = function(req, res) {
 // 回写图片对比的结果
 function writeResult(req, res) {
 	var params = require('url').parse(req.url, true).query || {};
-	db.write(params);
+	log.write(params);
 	res.writeHeader(200);
 	res.end();
 }

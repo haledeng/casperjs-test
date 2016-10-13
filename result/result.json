@@ -1,0 +1,17 @@
+{
+  "2345-com": {
+    "success": [
+      "http://m.2345.com/websitesNavigation.htm"
+    ]
+  },
+  "sina-cn": {
+    "success": [
+      "https://sina.cn/?HTTPS=1"
+    ]
+  },
+  "163-com": {
+    "success": [
+      "http://3g.163.com/touch/all?nav=2&version=v_standard"
+    ]
+  }
+}

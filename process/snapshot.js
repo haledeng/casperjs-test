@@ -2,14 +2,14 @@
 var require = patchRequire(require);
 var fs = require('fs');
 // absolute path
-var path = fs.absolute(fs.workingDirectory + '/lib/func.js');
-var func = require(path);
+var path = fs.absolute(fs.workingDirectory + '/lib/util.js');
+var _ = require(path);
 var casper = require('casper').create({
 	logLevel: 'info',
 	clientScripts: [
 		'./injectJs/zhaopin.test.min.js',
 		'./injectJs/resemble.js',
-		'./lib/func.js',
+		'./lib/util.js',
 		'./injectJs/tools.js'
 	],
 	pageSettings: {
@@ -57,7 +57,8 @@ var sendResult = function(state) {
 // 插入成功回调
 function addInsertListener() {
 	casper.on('insert:success', function(filePath, realUrl) {
-		var host = func.extractHost(realUrl);
+		var host = _.extractHost(realUrl);
+		var filePath = _.getPath(realUrl);
 		casper.evaluate(comparePic);
 		// 等待浏览器执行
 		casper.waitFor(function() {
@@ -77,7 +78,7 @@ function addInsertListener() {
 				if (Number(diff.misMatchPercentage) > 50) {
 					casper.echo('different picture');
 					sendResult(2);
-					casper.captureSelector('./snapshot/diff/' + (host ? host + '/' : '') + func.url2name(url) + '.png', '#image-diff');
+					casper.captureSelector('.' + filePath.diff, '#image-diff');
 					casper.exit(2);
 				} else {
 					sendResult(0);
@@ -96,15 +97,9 @@ function addInsertListener() {
 // 加载测试脚本，执行case
 function executeTest(url) {
 	casper.start(url);
-	// exit state
-	// 0: success
-	// 1: insert fail
-	// 2: insert success, diff snapshot
-	// 3: resemble timeout
 	casper.then(function() {
-		// 302 redirect
 		var realUrl = casper.getCurrentUrl();
-		var filePath = func.getPath(realUrl);
+		var filePath = _.getPath(realUrl);
 		this.waitForSelector('#z_p', (function() {
 			this.echo('xinxiliu insert success');
 			this.captureSelector('.' + filePath.success, '#z_p');
